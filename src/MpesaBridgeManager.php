@@ -2,9 +2,9 @@
 
 namespace Imarishwa\MpesaBridge;
 
-use InvalidArgumentException;
 use Illuminate\Support\Manager;
 use Imarishwa\MpesaBridge\Contracts\Factory;
+use InvalidArgumentException;
 
 class MpesaBridgeManager extends Manager implements Factory
 {

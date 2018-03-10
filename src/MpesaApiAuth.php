@@ -8,9 +8,8 @@ class MpesaApiAuth
 
     public function __construct()
     {
-
     }
-    
+
     /**
      * Generate the base64 encoded authorization key.
      *
@@ -18,7 +17,7 @@ class MpesaApiAuth
      */
     public static function generateCredentials()
     {
-        $config = __DIR__ . '/../../config/mpesa.php';
+        $config = __DIR__.'/../../config/mpesa.php';
         dd($config);
 //        $consumerKey    = $this->engine->config->get('mpesa.consumer_key');
 //        $consumerSecret = $this->engine->config->get('mpesa.consumer_secret');
