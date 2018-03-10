@@ -1,5 +1,6 @@
 {
     "name": "imarishwa/mpesa-bridge",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "Imarishwa\\MpesaBridge\\": "src/"
