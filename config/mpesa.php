@@ -8,8 +8,8 @@ return [
     |--------------------------------------------------------------------------
     |
     | Determines the environment that will be used by Mpesa.
-    | can be either true(For live apps already vetted by safaricom and ready 
-    | to handle live transactions) or false(For staging, testing and apps still in development) 
+    | can be either true(For live apps already vetted by safaricom and ready
+    | to handle live transactions) or false(For staging, testing and apps still in development)
     |
     | Possible values: true | false
     | Default: false
@@ -21,13 +21,13 @@ return [
     | Credentials
     |--------------------------------------------------------------------------
     |
-    | These are the credentials provided by safaricom to authenticate with the M-Pesa API 
+    | These are the credentials provided by safaricom to authenticate with the M-Pesa API
     | so as to be able to transact
     */
-    'consumer_key' => '',
-    'consumer_secret' => '',
+    'consumer_key'        => '',
+    'consumer_secret'     => '',
     'production_endpoint' => '',
-    'initiator' => 'testapi0297',
+    'initiator'           => 'testapi0297',
 
     /*
     |--------------------------------------------------------------------------
@@ -85,7 +85,7 @@ return [
     |
     */
     'passkey' => 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919',
-    
+
     /*
     |--------------------------------------------------------------------------
     | Transaction ID Handler

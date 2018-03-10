@@ -2,7 +2,6 @@
 
 namespace Imarishwa\MpesaBridge\Contracts;
 
-
 interface Factory
 {
     /**
@@ -13,5 +12,4 @@ interface Factory
      * @return mixed
      */
     public function driver($driver = null);
-
 }
