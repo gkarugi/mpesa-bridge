@@ -73,7 +73,7 @@ return [
     |
     |
     */
-    'short_code' => 174379,
+    'short_code' => '',
 
     /*
     |--------------------------------------------------------------------------
@@ -84,7 +84,7 @@ return [
     | of the Merchant's Paybill Number.
     |
     */
-    'passkey' => 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919',
+    'passkey' => '',
 
     /*
     |--------------------------------------------------------------------------
@@ -95,8 +95,8 @@ return [
     | used to generate the transaction number. This class must implement the
     | Transactable Interface.
     |
-    | Default: '\SmoDav\Mpesa\Generator'
+    | Default: '\Imarishwa\MpesaBridge\Generator'
     |
     */
-    'transaction_id_handler' => '\SmoDav\Mpesa\Generator',
+    'transaction_id_handler' => \Imarishwa\MpesaBridge\Generator::class,
 ];

@@ -13,7 +13,7 @@ class MpesaBridgeManager extends Manager implements Factory
      *
      * @return \Imarishwa\MpesaBridge\Drivers\AbstractDriver
      */
-    protected function createSMSDriver()
+    protected function createSTKPushDriver()
     {
         $config = $this->app['config']['mpesa'];
 
