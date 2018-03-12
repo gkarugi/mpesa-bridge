@@ -10,12 +10,12 @@ abstract class AbstractDriver
     /**
      * @var string
      */
-    protected $accessToken;
+    protected $accessToken = 'text';
 
     /**
      * @var \Illuminate\Config\Repository|mixed
      */
-    protected $config;
+    protected $config = [];
 
     /**
      * Create a new driver instance.
@@ -24,8 +24,10 @@ abstract class AbstractDriver
      */
     public function __construct()
     {
+        dd(config('mpesa'));
         $this->accessToken = $this->mpesaAuth();
-        $this->config = config('mpesa');
+        $this->configg = config('mpesa');
+        dd($this->configg);
     }
 
     /**
@@ -46,7 +48,7 @@ abstract class AbstractDriver
      * @return string
      */
     private function generateCredentials()
-    {
+    {dd($this->config);
         try {
             $consumerKey    = $this->config->get('mpesa.consumer_key');
             $consumerSecret = $this->config->get('mpesa.consumer_secret');
