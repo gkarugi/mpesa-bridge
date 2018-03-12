@@ -15,12 +15,13 @@ class STKPush extends AbstractDriver
      * Specify the SMS message.
      *
      * @pram string $message
+     *
      * @return $this
      */
     public function message($message)
     {
         dd($this->accessToken);
-        $this->message = $message." Here";
+        $this->message = $message.' Here';
 
         return $this;
     }
