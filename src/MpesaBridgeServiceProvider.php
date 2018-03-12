@@ -28,5 +28,10 @@ class MpesaBridgeServiceProvider extends ServiceProvider
         $this->app->singleton('Imarishwa\MpesaBridge\Contracts\Factory', function ($app) {
             return new MpesaBridgeManager($app);
         });
+
+        $this->mergeConfigFrom(
+            __DIR__.'/../config/mpesa.php', 'mpesa'
+        );
+
     }
 }

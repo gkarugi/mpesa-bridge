@@ -85,18 +85,4 @@ return [
     |
     */
     'passkey' => '',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Transaction ID Handler
-    |--------------------------------------------------------------------------
-    |
-    | Provide a fully qualified class name of the Class that will be
-    | used to generate the transaction number. This class must implement the
-    | Transactable Interface.
-    |
-    | Default: '\Imarishwa\MpesaBridge\Generator'
-    |
-    */
-    'transaction_id_handler' => \Imarishwa\MpesaBridge\Generator::class,
 ];
