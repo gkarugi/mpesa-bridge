@@ -32,6 +32,5 @@ class MpesaBridgeServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(
             __DIR__.'/../config/mpesa.php', 'mpesa'
         );
-
     }
 }

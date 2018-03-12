@@ -29,7 +29,7 @@ abstract class AbstractDriver
     }
 
     /**
-     * Authenticate with the Mpesa API
+     * Authenticate with the Mpesa API.
      *
      * @return string $accessToken
      */
@@ -48,11 +48,12 @@ abstract class AbstractDriver
     private function generateCredentials()
     {
         try {
-            $consumerKey    = $this->config->get('mpesa.consumer_key');
+            $consumerKey = $this->config->get('mpesa.consumer_key');
             $consumerSecret = $this->config->get('mpesa.consumer_secret');
         } catch (InvalidCredentialsException $exception) {
             return $exception;
         }
-        return \base64_encode($consumerKey . ':' . $consumerSecret);
+
+        return \base64_encode($consumerKey.':'.$consumerSecret);
     }
 }
