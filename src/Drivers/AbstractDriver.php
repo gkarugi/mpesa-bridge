@@ -48,7 +48,9 @@ abstract class AbstractDriver
      * @return string
      */
     private function generateCredentials()
-    {dd($this->config);
+    {
+        dd($this->config);
+
         try {
             $consumerKey = $this->config->get('mpesa.consumer_key');
             $consumerSecret = $this->config->get('mpesa.consumer_secret');
