@@ -31,9 +31,9 @@ class STKPush extends AbstractDriver
     {
         $time = Carbon::now()->format('YmdHis');
         $shortCode = $this->config['short_code'];
-        $passkey   = $this->config['passkey'];
+        $passkey = $this->config['passkey'];
 
-        $password  = \base64_encode($shortCode . $passkey . $time);
+        $password = \base64_encode($shortCode.$passkey.$time);
 
         $client = new Client([
             'headers' => [
@@ -42,17 +42,17 @@ class STKPush extends AbstractDriver
             ],
             'json' => [
                 'BusinessShortCode' => $this->config['short_code'],
-                'Password' => $password,
-                'Timestamp' => $time,
-                'TransactionType' => 'CustomerPayBillOnline',
-                'Amount' => 20,
-                'PartyA' => '254727357218',
-                'PartyB' => $shortCode,
-                'PhoneNumber' => '254727357218',
-                'CallBackURL' => 'https://revenue.localtunnel.me/callback',
-                'AccountReference' => 'Imarishwa County',
-                'TransactionDesc' => 'payment for county'
-            ]
+                'Password'          => $password,
+                'Timestamp'         => $time,
+                'TransactionType'   => 'CustomerPayBillOnline',
+                'Amount'            => 20,
+                'PartyA'            => '254727357218',
+                'PartyB'            => $shortCode,
+                'PhoneNumber'       => '254727357218',
+                'CallBackURL'       => 'https://revenue.localtunnel.me/callback',
+                'AccountReference'  => 'Imarishwa County',
+                'TransactionDesc'   => 'payment for county',
+            ],
         ]);
 
         $response = $client->send(new Request($this->config['callback_method'], $this->getApiBaseUrl().MPESA_STK_PUSH_URL));
