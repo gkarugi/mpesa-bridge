@@ -45,7 +45,7 @@ abstract class AbstractDriver
      *
      * @throws \Imarishwa\MpesaBridge\Exceptions\MissingBaseApiDomainException
      */
-    final private function authenticate()
+    public function authenticate()
     {
         try {
            $credential = $this->mpesaAuth();
@@ -106,7 +106,6 @@ abstract class AbstractDriver
             } else {
                 return $this->config['sandbox_endpoint'];
             }
-
         }
         throw new MissingBaseApiDomainException;
     }
