@@ -2,7 +2,7 @@
 
 namespace Imarishwa\MpesaBridge\Exceptions;
 
-class MissingBaseApiDomain extends \Exception
+class MissingBaseApiDomainException extends \Exception
 {
     protected $message = 'Missing the API production or sandbox domain endpoint';
 }

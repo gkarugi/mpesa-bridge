@@ -2,7 +2,7 @@
 
 namespace Imarishwa\MpesaBridge\Exceptions;
 
-class MissingMpesaApiCredentialsException extends \Exception
+class InvalidMpesaApiCredentialsException extends \Exception
 {
     protected $message = 'Consumer key or consumer secret are missing';
 }
