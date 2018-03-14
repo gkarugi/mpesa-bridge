@@ -49,9 +49,9 @@ abstract class AbstractDriver
     public function authenticate()
     {
         try {
-            $credential = $this->mpesaAuth();
+            $accessToken = $this->mpesaAuth();
 
-            return $credential->access_token;
+            return $accessToken;
         } catch (RequestException $exception) {
             return $exception;
         }
@@ -96,7 +96,7 @@ abstract class AbstractDriver
      *
      * @return string
      */
-    final private function getApiBaseUrl()
+    public function getApiBaseUrl()
     {
         if (isset($this->config['consumer_key']) &&
             isset($this->config['consumer_secret'])) {
