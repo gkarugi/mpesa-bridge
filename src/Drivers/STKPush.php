@@ -64,21 +64,22 @@ class STKPush extends AbstractDriver
      * Validate an initialized transaction.
      *
      * @param string $checkoutRequestID
+     *
      * @throws
      *
      * @return \Illuminate\Http\JsonResponse
      */
     public function validate($checkoutRequestID)
     {
-        $time      = Carbon::now()->format('YmdHis');
+        $time = Carbon::now()->format('YmdHis');
         $shortCode = $this->config['short_code'];
-        $passkey   = $this->config['passkey'];
-        $password  = \base64_encode($shortCode . $passkey . $time);
+        $passkey = $this->config['passkey'];
+        $password = \base64_encode($shortCode.$passkey.$time);
 
         $body = [
-            'BusinessShortCode' => $shortCode,
-            'Password'          => $password,
-            'Timestamp'         => $time,
+            'BusinessShortCode'   => $shortCode,
+            'Password'            => $password,
+            'Timestamp'           => $time,
             'CheckoutRequestID'   => $checkoutRequestID,
         ];
 
