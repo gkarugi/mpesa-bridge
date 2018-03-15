@@ -9,6 +9,8 @@ use Imarishwa\MpesaBridge\Exceptions\MissingBaseApiDomainException;
 
 abstract class AbstractDriver
 {
+//    TODO: setup cache so that a new token is only requested when it is near expiration
+
     /**
      * @var \Illuminate\Config\Repository|mixed
      */
@@ -25,6 +27,11 @@ abstract class AbstractDriver
     protected $accessToken;
 
     /**
+     * @var string
+     */
+    protected $apiBaseUrl;
+
+    /**
      * Create a new driver instance.
      *
      * @throws \Imarishwa\MpesaBridge\Exceptions\InvalidMpesaApiCredentialsException
@@ -37,19 +44,18 @@ abstract class AbstractDriver
         $this->config = config('mpesa');
         $this->base64MpesaCredentials = $this->base64MpesaCredentials();
         $this->accessToken = $this->mpesaAuth();
+        $this->apiBaseUrl = $this->getApiBaseUrl();
     }
 
     /**
      * Get a valid Mpesa API access token.
-     *
-     * @throws \Imarishwa\MpesaBridge\Exceptions\MissingBaseApiDomainException
      *
      * @return mixed
      */
     public function authenticate()
     {
         try {
-            $accessToken = $this->mpesaAuth();
+            $accessToken = $this->accessToken;
 
             return $accessToken;
         } catch (RequestException $exception) {

@@ -4,6 +4,7 @@ namespace Imarishwa\MpesaBridge\Drivers;
 
 use Carbon\Carbon;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 
 class STKPush extends AbstractDriver
@@ -32,7 +33,6 @@ class STKPush extends AbstractDriver
         $time = Carbon::now()->format('YmdHis');
         $shortCode = $this->config['short_code'];
         $passkey = $this->config['passkey'];
-
         $password = \base64_encode($shortCode.$passkey.$time);
 
         $client = new Client([
@@ -58,5 +58,45 @@ class STKPush extends AbstractDriver
         $response = $client->send(new Request($this->config['callback_method'], $this->getApiBaseUrl().MPESA_STK_PUSH_URL));
         $body = \json_decode($response->getBody());
         dd($body);
+    }
+
+    /**
+     * Validate an initialized transaction.
+     *
+     * @param string $checkoutRequestID
+     * @throws
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function validate($checkoutRequestID)
+    {
+        $time      = Carbon::now()->format('YmdHis');
+        $shortCode = $this->config['short_code'];
+        $passkey   = $this->config['passkey'];
+        $password  = \base64_encode($shortCode . $passkey . $time);
+
+        $body = [
+            'BusinessShortCode' => $shortCode,
+            'Password'          => $password,
+            'Timestamp'         => $time,
+            'CheckoutRequestID'   => $checkoutRequestID,
+        ];
+
+        try {
+            $response = $this->makeRequest($body, $this->getApiBaseUrl().MPESA_STK_PUSH_VALIDATE_URL);
+            $client = new Client([
+                'headers' => [
+                    'Authorization' => 'Bearer '.$this->authenticate(),
+                    'Accept'        => 'application/json',
+                ],
+                'json' => $body,
+            ]);
+
+            $response = $client->send(new Request($this->config['callback_method'], $this->getApiBaseUrl().MPESA_STK_PUSH_URL));
+
+            return \json_decode($response->getBody());
+        } catch (RequestException $exception) {
+            return \json_decode($exception->getResponse()->getBody());
+        }
     }
 }
