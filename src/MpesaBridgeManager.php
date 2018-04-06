@@ -9,13 +9,13 @@ use Imarishwa\MpesaBridge\Drivers\UrlRegistrar;
 use InvalidArgumentException;
 
 /**
- * Class MpesaBridgeManager
- * @package Imarishwa\MpesaBridge
+ * Class MpesaBridgeManager.
  */
 class MpesaBridgeManager extends Manager implements Factory
 {
     /**
      * Create an instance of the specified driver.
+     *
      * @throws \Exception
      *
      * @return \Imarishwa\MpesaBridge\Drivers\BaseDriver
@@ -29,7 +29,9 @@ class MpesaBridgeManager extends Manager implements Factory
 
     /**
      * Create an instance of the specified driver.
+     *
      * @throws \Exception
+     *
      * @return \Imarishwa\MpesaBridge\Drivers\BaseDriver
      */
     protected function createUrlRegistrarDriver()
@@ -44,13 +46,14 @@ class MpesaBridgeManager extends Manager implements Factory
      *
      * @param  $provider
      * @param  $config
-     * @throws \Exception
-     * @return  \Imarishwa\MpesaBridge\Drivers\BaseDriver $provider
      *
+     * @throws \Exception
+     *
+     * @return \Imarishwa\MpesaBridge\Drivers\BaseDriver $provider
      */
     protected function buildProvider($provider, $config)
     {
-        if (is_subclass_of($provider,BaseDriver::class,true)) {
+        if (is_subclass_of($provider, BaseDriver::class, true)) {
             return new $provider($config);
         }
 

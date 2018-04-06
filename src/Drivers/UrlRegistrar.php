@@ -2,7 +2,6 @@
 
 namespace Imarishwa\MpesaBridge\Drivers;
 
-
 class UrlRegistrar extends BaseDriver
 {
     /**
@@ -19,5 +18,4 @@ class UrlRegistrar extends BaseDriver
     {
         dd($this->buildRequest());
     }
-
 }

@@ -88,7 +88,6 @@ class BaseDriver
     {
         if (stringNotNullOrEmpty($this->config['consumer_key']) &&
             stringNotNullOrEmpty($this->config['consumer_secret'])) {
-
             $consumerKey = trim($this->config['consumer_key']);
             $consumerSecret = trim($this->config['consumer_secret']);
 
@@ -107,7 +106,6 @@ class BaseDriver
     {
         if (stringNotNullOrEmpty($this->config['production_endpoint']) &&
             stringNotNullOrEmpty($this->config['sandbox_endpoint'])) {
-
             if ($this->config['live'] == true) {
                 return $this->config['production_endpoint'];
             } else {
