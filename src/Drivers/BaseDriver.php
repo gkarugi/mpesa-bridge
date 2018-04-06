@@ -64,6 +64,27 @@ class BaseDriver
     }
 
     /**
+     * @throws \Imarishwa\MpesaBridge\Exceptions\MissingBaseApiDomainException
+     *
+     * @return mixed
+     */
+    final private function mpesaAuth()
+    {
+        $client = new Client();
+
+        $response = $client->request('GET', $this->getApiBaseUrl().MPESA_AUTH_URL, [
+            'headers' => [
+                'Authorization' => 'Basic '.$this->base64MpesaCredentials,
+                'Accept'        => 'application/json',
+            ],
+        ]);
+
+        $body = \json_decode($response->getBody());
+
+        return $body->access_token;
+    }
+
+    /**
      * Returns a base64 encoded concatenation of the Mpesa API consumer key and consumer secret.
      *
      * @throws \Imarishwa\MpesaBridge\Exceptions\InvalidMpesaApiCredentialsException
@@ -114,26 +135,5 @@ class BaseDriver
         }
 
         throw new MissingBaseApiDomainException();
-    }
-
-    /**
-     * @throws \Imarishwa\MpesaBridge\Exceptions\MissingBaseApiDomainException
-     *
-     * @return mixed
-     */
-    final private function mpesaAuth()
-    {
-        $client = new Client();
-
-        $response = $client->request('GET', $this->getApiBaseUrl().MPESA_AUTH_URL, [
-            'headers' => [
-                'Authorization' => 'Basic '.$this->base64MpesaCredentials,
-                'Accept'        => 'application/json',
-            ],
-        ]);
-
-        $body = \json_decode($response->getBody());
-
-        return $body->access_token;
     }
 }
