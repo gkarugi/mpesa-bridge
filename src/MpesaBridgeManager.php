@@ -5,7 +5,6 @@ namespace Imarishwa\MpesaBridge;
 use Illuminate\Support\Manager;
 use Imarishwa\MpesaBridge\Contracts\Factory;
 use Imarishwa\MpesaBridge\Drivers\BaseDriver;
-use Imarishwa\MpesaBridge\Drivers\UrlRegistrar;
 use InvalidArgumentException;
 
 /**
@@ -24,7 +23,7 @@ class MpesaBridgeManager extends Manager implements Factory
     {
         $config = $this->app['config']['mpesa'];
 
-        return $this->buildProvider('Imarishwa\MpesaBridge\Drivers\STKPush', $config);
+        return $this->buildProvider('Imarishwa\MpesaBridge\Drivers\C2B\STKPush', $config);
     }
 
     /**
@@ -38,7 +37,7 @@ class MpesaBridgeManager extends Manager implements Factory
     {
         $config = $this->app['config']['mpesa'];
 
-        return $this->buildProvider(UrlRegistrar::class, $config);
+        return $this->buildProvider('Imarishwa\MpesaBridge\Drivers\C2B\UrlRegistrar', $config);
     }
 
     /**
