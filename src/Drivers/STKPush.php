@@ -7,7 +7,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 
-class STKPush extends AbstractDriver
+class STKPush extends BaseDriver
 {
     /**
      * SMS message.

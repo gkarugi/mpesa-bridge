@@ -7,7 +7,7 @@ use GuzzleHttp\Exception\RequestException;
 use Imarishwa\MpesaBridge\Exceptions\InvalidMpesaApiCredentialsException;
 use Imarishwa\MpesaBridge\Exceptions\MissingBaseApiDomainException;
 
-abstract class AbstractDriver
+class BaseDriver
 {
 //    TODO: setup cache so that a new token is only requested when it is near expiration
 
@@ -43,8 +43,8 @@ abstract class AbstractDriver
     {
         $this->config = config('mpesa');
         $this->base64MpesaCredentials = $this->base64MpesaCredentials();
-        $this->accessToken = $this->mpesaAuth();
         $this->apiBaseUrl = $this->getApiBaseUrl();
+        $this->accessToken = $this->mpesaAuth();
     }
 
     /**
@@ -86,8 +86,9 @@ abstract class AbstractDriver
      */
     final private function generateCredentials()
     {
-        if (isset($this->config['consumer_key']) &&
-            isset($this->config['consumer_secret'])) {
+        if (stringNotNullOrEmpty($this->config['consumer_key']) &&
+            stringNotNullOrEmpty($this->config['consumer_secret'])) {
+
             $consumerKey = trim($this->config['consumer_key']);
             $consumerSecret = trim($this->config['consumer_secret']);
 
@@ -104,8 +105,9 @@ abstract class AbstractDriver
      */
     public function getApiBaseUrl()
     {
-        if (isset($this->config['consumer_key']) &&
-            isset($this->config['consumer_secret'])) {
+        if (stringNotNullOrEmpty($this->config['production_endpoint']) &&
+            stringNotNullOrEmpty($this->config['sandbox_endpoint'])) {
+
             if ($this->config['live'] == true) {
                 return $this->config['production_endpoint'];
             } else {

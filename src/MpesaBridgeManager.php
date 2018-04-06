@@ -4,14 +4,21 @@ namespace Imarishwa\MpesaBridge;
 
 use Illuminate\Support\Manager;
 use Imarishwa\MpesaBridge\Contracts\Factory;
+use Imarishwa\MpesaBridge\Drivers\BaseDriver;
+use Imarishwa\MpesaBridge\Drivers\UrlRegistrar;
 use InvalidArgumentException;
 
+/**
+ * Class MpesaBridgeManager
+ * @package Imarishwa\MpesaBridge
+ */
 class MpesaBridgeManager extends Manager implements Factory
 {
     /**
      * Create an instance of the specified driver.
+     * @throws \Exception
      *
-     * @return \Imarishwa\MpesaBridge\Drivers\AbstractDriver
+     * @return \Imarishwa\MpesaBridge\Drivers\BaseDriver
      */
     protected function createSTKPushDriver()
     {
@@ -21,13 +28,33 @@ class MpesaBridgeManager extends Manager implements Factory
     }
 
     /**
+     * Create an instance of the specified driver.
+     * @throws \Exception
+     * @return \Imarishwa\MpesaBridge\Drivers\BaseDriver
+     */
+    protected function createUrlRegistrarDriver()
+    {
+        $config = $this->app['config']['mpesa'];
+
+        return $this->buildProvider(UrlRegistrar::class, $config);
+    }
+
+    /**
      * Build the driver instance.
      *
-     * @return \Imarishwa\MpesaBridge\Drivers\AbstractDriver
+     * @param  $provider
+     * @param  $config
+     * @throws \Exception
+     * @return  \Imarishwa\MpesaBridge\Drivers\BaseDriver $provider
+     *
      */
     protected function buildProvider($provider, $config)
     {
-        return new $provider($config);
+        if (is_subclass_of($provider,BaseDriver::class,true)) {
+            return new $provider($config);
+        }
+
+        throw new \Exception('No valid driver found');
     }
 
     /**
