@@ -6,5 +6,4 @@ use Imarishwa\MpesaBridge\Drivers\BaseDriver;
 
 class UrlRegistrar extends BaseDriver
 {
-
 }

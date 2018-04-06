@@ -49,7 +49,6 @@ class STKPush extends BaseDriver
         return $this;
     }
 
-
     public function accountReference(string $accountReference)
     {
         \preg_match('/[^A-Za-z0-9]/', $accountReference, $matches);
@@ -58,7 +57,7 @@ class STKPush extends BaseDriver
             throw new \InvalidArgumentException('Account reference must be alphanumeric.');
         }
 
-        $this->accountReference   = $accountReference;
+        $this->accountReference = $accountReference;
 
         return $this;
     }
@@ -81,22 +80,22 @@ class STKPush extends BaseDriver
         if (is_null($this->safaricomNumber) || is_null($this->chargeAmount) || is_null($this->accountReference) || is_null($this->transactionDescription)) {
             return false;
         }
+
         return true;
     }
 
     public function push()
     {
         if (is_null($this->shortCode) || is_null($this->shortCodePassword)) {
-            if((stringNotNullOrEmpty($this->config['lnmo_default_short_code']) ||
+            if ((stringNotNullOrEmpty($this->config['lnmo_default_short_code']) ||
                 stringNotNullOrEmpty($this->config['lnmo_default_passkey'])) === false) {
-
                 throw new \InvalidArgumentException('Shortcode or passkey missing');
             }
             $this->shortCode = $this->config['lnmo_default_short_code'];
             $this->shortCodePassword = $this->config['lnmo_default_passkey'];
         }
 
-        if (! $this->paramsValid()) {
+        if (!$this->paramsValid()) {
             throw new \InvalidArgumentException('A safaricom number, an amount, an account reference and transaction description parameters are mandatory');
         }
 
