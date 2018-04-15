@@ -27,7 +27,7 @@ class UrlRegistrar extends BaseDriver
 
     public function setValidationUrl($validationUrl)
     {
-        if (is_null($validationUrl)){
+        if (is_null($validationUrl)) {
             throw new \InvalidArgumentException('Validation Url is required and should be a valid Url');
         }
 
@@ -38,7 +38,7 @@ class UrlRegistrar extends BaseDriver
 
     public function setConfirmationUrl($confirmationUrl)
     {
-        if (is_null($confirmationUrl)){
+        if (is_null($confirmationUrl)) {
             throw new \InvalidArgumentException('Confirmation Url is required and should be a valid Url');
         }
 
@@ -73,12 +73,13 @@ class UrlRegistrar extends BaseDriver
             $this->setResponseType();
         }
 
-        if (! $this->paramsValid() ) {
+        if (!$this->paramsValid()) {
             throw new \InvalidArgumentException('Invalid timeout argument. Use Completed or Cancelled');
         }
 
         try {
             $response = $this->buildRequest();
+
             return \json_decode($response->getBody());
         } catch (RequestException $exception) {
             return $exception;
@@ -86,7 +87,7 @@ class UrlRegistrar extends BaseDriver
     }
 
     /**
-     * Register Urls for a shortcode
+     * Register Urls for a shortcode.
      *
      * @throws RequestException
      * @throws MissingBaseApiDomainException
@@ -104,7 +105,7 @@ class UrlRegistrar extends BaseDriver
                 'ShortCode'       => $this->shortCode,
                 'ResponseType'    => $this->responseType,
                 'ConfirmationURL' => $this->confirmationUrl,
-                'ValidationURL'   => $this->validationUrl
+                'ValidationURL'   => $this->validationUrl,
             ],
         ]);
 

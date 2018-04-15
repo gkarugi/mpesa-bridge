@@ -94,10 +94,10 @@ class SimulatePayment extends BaseDriver
                 'Accept'        => 'application/json',
             ],
             'json' => [
-                'ShortCode' => $this->shortCode,
-                'CommandID' => 'CustomerPayBillOnline',
-                'Amount' => $this->chargeAmount,
-                'Msisdn' => $this->safaricomNumber,
+                'ShortCode'     => $this->shortCode,
+                'CommandID'     => 'CustomerPayBillOnline',
+                'Amount'        => $this->chargeAmount,
+                'Msisdn'        => $this->safaricomNumber,
                 'BillRefNumber' => $this->billReferenceNumber,
             ],
         ]);

@@ -14,7 +14,7 @@ return [
     | Possible values: sandbox | production
     | Default: sandbox
     */
-    'mpesa_env' => env('MPESA_ENV','sandbox'),
+    'mpesa_env' => env('MPESA_ENV', 'sandbox'),
 
     /*
     |--------------------------------------------------------------------------
@@ -28,11 +28,11 @@ return [
     'consumer_secret'     => env('MPESA_CONSUMER_SECRET'),
 
     'production_endpoint' => 'https://api.safaricom.co.ke',
-    'sandbox_endpoint' => 'https://sandbox.safaricom.co.ke',
+    'sandbox_endpoint'    => 'https://sandbox.safaricom.co.ke',
 
-    'default_initiator_name'  =>  env('MPESA_DEFAULT_INITIATOR_NAME'),
-    'default_initiator_short_code'  =>  env('MPESA_DEFAULT_INITIATOR_SHORT_CODE'),
-    'default_initiator_password' => env('MPESA_DEFAULT_INITIATOR_PASSWORD'),
+    'default_initiator_name'        => env('MPESA_DEFAULT_INITIATOR_NAME'),
+    'default_initiator_short_code'  => env('MPESA_DEFAULT_INITIATOR_SHORT_CODE'),
+    'default_initiator_password'    => env('MPESA_DEFAULT_INITIATOR_PASSWORD'),
 
     /*
     |--------------------------------------------------------------------------
@@ -55,7 +55,6 @@ return [
     |
     */
     'lnmo_default_passkey' => env('MPESA_DEFAULT_LNMO_PASSKEY'),
-
 
     /*
     |--------------------------------------------------------------------------
