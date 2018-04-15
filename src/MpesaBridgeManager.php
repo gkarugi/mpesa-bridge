@@ -41,6 +41,20 @@ class MpesaBridgeManager extends Manager implements Factory
     }
 
     /**
+     * Create an instance of the specified driver.
+     *
+     * @throws \Exception
+     *
+     * @return \Imarishwa\MpesaBridge\Drivers\BaseDriver
+     */
+    protected function createSimulatePaymentDriver()
+    {
+        $config = $this->app['config']['mpesa'];
+
+        return $this->buildProvider('Imarishwa\MpesaBridge\Drivers\C2B\SimulatePayment', $config);
+    }
+
+    /**
      * Build the driver instance.
      *
      * @param  $provider

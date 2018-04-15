@@ -10,3 +10,14 @@ if (!function_exists('stringNotNullOrEmpty')) {
         return true;
     }
 }
+
+if (!function_exists('isValidUrl')) {
+    function isValidUrl(string $url) :bool
+    {
+        if (filter_var($url, FILTER_VALIDATE_URL) === true) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+}

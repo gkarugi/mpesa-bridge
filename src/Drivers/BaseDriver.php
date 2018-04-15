@@ -127,7 +127,7 @@ class BaseDriver
     {
         if (stringNotNullOrEmpty($this->config['production_endpoint']) &&
             stringNotNullOrEmpty($this->config['sandbox_endpoint'])) {
-            if ($this->config['live'] == true) {
+            if ($this->config['mpesa_env'] == 'production') {
                 return $this->config['production_endpoint'];
             } else {
                 return $this->config['sandbox_endpoint'];
