@@ -2,11 +2,13 @@
 
 namespace Imarishwa\MpesaBridge\Drivers\C2B;
 
+use App\Exceptions\InvalidCredentialsException;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use Imarishwa\MpesaBridge\Drivers\BaseDriver;
+use Imarishwa\MpesaBridge\Exceptions\MissingBaseApiDomainException;
 
 class STKPush extends BaseDriver
 {
@@ -16,6 +18,7 @@ class STKPush extends BaseDriver
     protected $safaricomNumber;
     protected $accountReference;
     protected $transactionDescription;
+    protected $stkCallback;
 
     public function using(int $shortCode, string $password)
     {
@@ -77,7 +80,7 @@ class STKPush extends BaseDriver
 
     public function paramsValid() : bool
     {
-        if (is_null($this->safaricomNumber) || is_null($this->chargeAmount) || is_null($this->accountReference) || is_null($this->transactionDescription)) {
+        if (is_null($this->safaricomNumber) || is_null($this->chargeAmount) || is_null($this->accountReference) || is_null($this->transactionDescription) || is_null($this->stkCallback)) {
             return false;
         }
 
@@ -86,20 +89,27 @@ class STKPush extends BaseDriver
 
     public function push()
     {
-        if (is_null($this->shortCode) || is_null($this->shortCodePassword)) {
+        if (is_null($this->shortCode) || is_null($this->shortCodePassword) || is_null($this->stkCallback)) {
             if ((stringNotNullOrEmpty($this->config['lnmo_default_short_code']) ||
-                stringNotNullOrEmpty($this->config['lnmo_default_passkey'])) === false) {
-                throw new \InvalidArgumentException('Shortcode or passkey missing');
+                stringNotNullOrEmpty($this->config['lnmo_default_passkey']) ||
+                stringNotNullOrEmpty($this->config['stk_callback'])) === false) {
+
+                throw new \InvalidArgumentException('Shortcode, stk_callback or passkey missing');
             }
             $this->shortCode = $this->config['lnmo_default_short_code'];
             $this->shortCodePassword = $this->config['lnmo_default_passkey'];
+            $this->stkCallback = $this->config['stk_callback'];
         }
 
         if (!$this->paramsValid()) {
-            throw new \InvalidArgumentException('A safaricom number, an amount, an account reference and transaction description parameters are mandatory');
+            throw new \InvalidArgumentException('A safaricom number, an amount, an account reference and transaction description parameters are mandatory. Also ensure a stk_callback is defined');
         }
 
-        $this->buildRequest();
+        try {
+            return $this->buildRequest();
+        } catch (InvalidCredentialsException $e) {
+        } catch (MissingBaseApiDomainException $e) {
+        }
     }
 
     /**
@@ -125,15 +135,15 @@ class STKPush extends BaseDriver
                 'PartyA'            => $this->safaricomNumber,
                 'PartyB'            => $this->shortCode,
                 'PhoneNumber'       => $this->safaricomNumber,
-                'CallBackURL'       => 'https://revenue.localtunnel.me/callback',
+                'CallBackURL'       => $this->config['stk_callback'],
                 'AccountReference'  => $this->accountReference,
                 'TransactionDesc'   => $this->transactionDescription,
             ],
         ]);
 
-        $response = $client->send(new Request($this->config['callback_method'], $this->getApiBaseUrl().MPESA_STK_PUSH_URL));
-        $body = \json_decode($response->getBody());
-        dd($body);
+        $response = $client->send(new Request('POST', $this->getApiBaseUrl().MPESA_STK_PUSH_URL));
+
+        return (array) \json_decode($response->getBody());
     }
 
     /**
