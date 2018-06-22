@@ -6,7 +6,6 @@
 |--------------------------------------------------------------------------
 | Mpesa API endpoints
 */
-
 const MPESA_AUTH_URL = '/oauth/v1/generate?grant_type=client_credentials';
 const MPESA_ID_CHECK_URL = '/mpesa/checkidentity/v1/query';
 const MPESA_C2B_SIMULATE_URL = '/mpesa/c2b/v1/simulate';

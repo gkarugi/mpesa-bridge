@@ -5,6 +5,8 @@ namespace Imarishwa\MpesaBridge\Drivers\C2B;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use Imarishwa\MpesaBridge\Drivers\BaseDriver;
+use Imarishwa\MpesaBridge\Exceptions\InvalidMpesaApiCredentialsException;
+use Imarishwa\MpesaBridge\Exceptions\MissingBaseApiDomainException;
 
 class SimulatePayment extends BaseDriver
 {
@@ -69,9 +71,8 @@ class SimulatePayment extends BaseDriver
     public function simulate()
     {
         if (is_null($this->shortCode)) {
-            if ((stringNotNullOrEmpty($this->config['default_initiator_short_code']) ||
-                    stringNotNullOrEmpty($this->config['default_initiator_password'])) === false) {
-                throw new \InvalidArgumentException('Shortcode or passkey missing');
+            if ((stringNotNullOrEmpty($this->config['default_initiator_short_code'])) === false) {
+                throw new \InvalidArgumentException('Shortcode  missing');
             }
             $this->shortCode = $this->config['default_initiator_short_code'];
         }
@@ -80,7 +81,7 @@ class SimulatePayment extends BaseDriver
             throw new \InvalidArgumentException('A safaricom number, shortcode and charge amount are mandatory');
         }
 
-        $this->buildRequest();
+        return $this->buildRequest();
     }
 
     /**
@@ -95,7 +96,7 @@ class SimulatePayment extends BaseDriver
             ],
             'json' => [
                 'ShortCode'     => $this->shortCode,
-                'CommandID'     => 'CustomerPayBillOnline',
+                'CommandID'     => 'CustomerBuyGoodsOnline',
                 'Amount'        => $this->chargeAmount,
                 'Msisdn'        => $this->safaricomNumber,
                 'BillRefNumber' => $this->billReferenceNumber,
@@ -103,7 +104,7 @@ class SimulatePayment extends BaseDriver
         ]);
 
         $response = $client->send(new Request('POST', $this->getApiBaseUrl().MPESA_C2B_SIMULATE_URL));
-        $body = \json_decode($response->getBody());
-        dd($body);
+
+        return \json_decode($response->getBody(),true);
     }
 }

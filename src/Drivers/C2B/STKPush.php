@@ -2,34 +2,34 @@
 
 namespace Imarishwa\MpesaBridge\Drivers\C2B;
 
-use App\Exceptions\InvalidCredentialsException;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use Imarishwa\MpesaBridge\Drivers\BaseDriver;
+use Imarishwa\MpesaBridge\Exceptions\InvalidMpesaApiCredentialsException;
 use Imarishwa\MpesaBridge\Exceptions\MissingBaseApiDomainException;
 
 class STKPush extends BaseDriver
 {
     protected $shortCode;
-    protected $shortCodePassword;
+    protected $shortCodePasskey;
     protected $chargeAmount;
-    protected $safaricomNumber;
+    protected $mobileNumber;
     protected $accountReference;
     protected $transactionDescription;
     protected $stkCallback;
 
-    public function using(int $shortCode, string $password)
+    public function using(int $shortCode, string $passkey)
     {
-        if (!\is_numeric($shortCode) || \preg_match('/[^A-Za-z0-9]/', $password, $matches)) {
-            throw new \InvalidArgumentException('Short code should be numeric and password should be alphanumeric');
+        if ((\is_numeric($shortCode) && (\strlen($shortCode) == 6)) || \preg_match('/[^A-Za-z0-9]/', $passkey, $matches)) {
+            $this->shortCode = $shortCode;
+            $this->shortCodePasskey = $passkey;
+
+            return $this;
         }
 
-        $this->shortCode = $shortCode;
-        $this->shortCodePassword = $password;
-
-        return $this;
+        throw new \InvalidArgumentException('ShortCode should be numeric and 6 digit in length, password should be alphanumeric');
     }
 
     public function receive($chargeAmount)
@@ -37,17 +37,19 @@ class STKPush extends BaseDriver
         if (!\is_numeric($chargeAmount)) {
             throw new \InvalidArgumentException('charge amount must be numeric');
         }
+
         $this->chargeAmount = (int) $chargeAmount;
 
         return $this;
     }
 
-    public function from($safaricomNumber)
+    public function from($mobileNumber)
     {
-        if (!starts_with($safaricomNumber, '2547')) {
-            throw new \InvalidArgumentException('The number must be a safaricom number');
+        if (!\starts_with($mobileNumber, '2547')) {
+            throw new \InvalidArgumentException('The mobile number is invalid. Must start with 2547');
         }
-        $this->safaricomNumber = (string) $safaricomNumber;
+
+        $this->mobileNumber = (string) $mobileNumber;
 
         return $this;
     }
@@ -78,9 +80,16 @@ class STKPush extends BaseDriver
         return $this;
     }
 
+    public function callbackUrl(string $stkCallbackUrl)
+    {
+        $this->stkCallback = $stkCallbackUrl;
+
+        return $this;
+    }
+
     public function paramsValid() : bool
     {
-        if (is_null($this->safaricomNumber) || is_null($this->chargeAmount) || is_null($this->accountReference) || is_null($this->transactionDescription) || is_null($this->stkCallback)) {
+        if (is_null($this->mobileNumber) || is_null($this->chargeAmount) || is_null($this->accountReference) || is_null($this->transactionDescription) || is_null($this->stkCallback)) {
             return false;
         }
 
@@ -89,37 +98,27 @@ class STKPush extends BaseDriver
 
     public function push()
     {
-        if (is_null($this->shortCode) || is_null($this->shortCodePassword) || is_null($this->stkCallback)) {
+        if (is_null($this->shortCode) || is_null($this->shortCodePasskey) || is_null($this->stkCallback)) {
             if ((stringNotNullOrEmpty($this->config['lnmo_default_short_code']) ||
-                stringNotNullOrEmpty($this->config['lnmo_default_passkey']) ||
-                stringNotNullOrEmpty($this->config['stk_callback'])) === false) {
+                stringNotNullOrEmpty($this->config['lnmo_default_passkey'])) === false) {
 
                 throw new \InvalidArgumentException('Shortcode, stk_callback or passkey missing');
             }
             $this->shortCode = $this->config['lnmo_default_short_code'];
-            $this->shortCodePassword = $this->config['lnmo_default_passkey'];
-            $this->stkCallback = $this->config['stk_callback'];
+            $this->shortCodePasskey = $this->config['lnmo_default_passkey'];
         }
 
         if (!$this->paramsValid()) {
-            throw new \InvalidArgumentException('A safaricom number, an amount, an account reference and transaction description parameters are mandatory. Also ensure a stk_callback is defined');
+            throw new \InvalidArgumentException('A safaricom number, an amount, an account reference and transaction description parameters are mandatory. Also ensure a stk push callback url is defined');
         }
 
-        try {
-            return $this->buildRequest();
-        } catch (InvalidCredentialsException $e) {
-        } catch (MissingBaseApiDomainException $e) {
-        }
+        return $this->buildRequest();
     }
 
-    /**
-     * @throws \Imarishwa\MpesaBridge\Exceptions\MissingBaseApiDomainException
-     * @throws \App\Exceptions\InvalidCredentialsException
-     */
     public function buildRequest()
     {
         $time = Carbon::now()->format('YmdHis');
-        $base64Password = \base64_encode($this->shortCode.$this->shortCodePassword.$time);
+        $base64Password = \base64_encode($this->shortCode . $this->shortCodePasskey . $time);
 
         $client = new Client([
             'headers' => [
@@ -132,29 +131,35 @@ class STKPush extends BaseDriver
                 'Timestamp'         => $time,
                 'TransactionType'   => 'CustomerPayBillOnline',
                 'Amount'            => $this->chargeAmount,
-                'PartyA'            => $this->safaricomNumber,
-                'PartyB'            => $this->shortCode,
-                'PhoneNumber'       => $this->safaricomNumber,
-                'CallBackURL'       => $this->config['stk_callback'],
+                'PartyA'            => $this->mobileNumber,
+                'PartyB'            => '123456', //$this->shortCode,
+                'PhoneNumber'       => $this->mobileNumber,
+                'CallBackURL'       => $this->stkCallback,
                 'AccountReference'  => $this->accountReference,
                 'TransactionDesc'   => $this->transactionDescription,
             ],
         ]);
 
-        $response = $client->send(new Request('POST', $this->getApiBaseUrl().MPESA_STK_PUSH_URL));
+        try {
+            $response = $client->send(new Request('POST', $this->getApiBaseUrl().MPESA_STK_PUSH_URL));
 
-        return (array) \json_decode($response->getBody());
+            return \json_decode($response->getBody(),true);
+        } catch (RequestException $e) {
+//            dd($e->getRequest());
+            if ($e->hasResponse()) {
+               dd($e->getResponse()->getBody()->getContents());
+            }
+        }
+
+//        catch(\Exception $e) {
+//                dd($e);
+////            dd(\json_decode($e->getResponse()->getBody()->getContents()));
+//            return \json_decode($e->getResponse()->getBody()->getContents());
+//        }
+
+        return \json_decode($response->getBody(),true);
     }
 
-    /**
-     * Validate an initialized transaction.
-     *
-     * @param string $checkoutRequestID
-     *
-     * @throws
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function validateTransaction($checkoutRequestID)
     {
         $time = Carbon::now()->format('YmdHis');
@@ -170,7 +175,6 @@ class STKPush extends BaseDriver
         ];
 
         try {
-            $response = $this->makeRequest($body, $this->getApiBaseUrl().MPESA_STK_PUSH_VALIDATE_URL);
             $client = new Client([
                 'headers' => [
                     'Authorization' => 'Bearer '.$this->authenticate(),
@@ -181,9 +185,9 @@ class STKPush extends BaseDriver
 
             $response = $client->send(new Request($this->config['callback_method'], $this->getApiBaseUrl().MPESA_STK_PUSH_URL));
 
-            return \json_decode($response->getBody());
+            return \json_decode($response->getBody(),true);
         } catch (RequestException $exception) {
-            return \json_decode($exception->getResponse()->getBody());
+            return $exception;
         }
     }
 }

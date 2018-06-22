@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use Imarishwa\MpesaBridge\Drivers\BaseDriver;
+use Imarishwa\MpesaBridge\Exceptions\InvalidMpesaApiCredentialsException;
 use Imarishwa\MpesaBridge\Exceptions\MissingBaseApiDomainException;
 
 class UrlRegistrar extends BaseDriver
@@ -27,6 +28,7 @@ class UrlRegistrar extends BaseDriver
 
     public function setValidationUrl($validationUrl)
     {
+        //TODO: valiadate url
         if (is_null($validationUrl)) {
             throw new \InvalidArgumentException('Validation Url is required and should be a valid Url');
         }
@@ -38,6 +40,7 @@ class UrlRegistrar extends BaseDriver
 
     public function setConfirmationUrl($confirmationUrl)
     {
+        //TODO: valiadate url
         if (is_null($confirmationUrl)) {
             throw new \InvalidArgumentException('Confirmation Url is required and should be a valid Url');
         }
@@ -49,13 +52,13 @@ class UrlRegistrar extends BaseDriver
 
     public function setResponseType($responseType = 'Completed')
     {
-        if ($responseType != 'Completed' && $responseType != 'Cancelled') {
-            throw new \InvalidArgumentException('Invalid timeout argument. Use Completed or Cancelled');
+        if ($responseType === 'Completed' || $responseType === 'Cancelled') {
+            $this->responseType = $responseType;
+
+            return $this;
         }
 
-        $this->responseType = $responseType;
-
-        return $this;
+        throw new \InvalidArgumentException('Invalid timeout argument. Use Completed or Cancelled');
     }
 
     public function paramsValid() : bool
@@ -80,20 +83,12 @@ class UrlRegistrar extends BaseDriver
         try {
             $response = $this->buildRequest();
 
-            return \json_decode($response->getBody());
+            return \json_decode($response->getBody(),true);
         } catch (RequestException $exception) {
             return $exception;
         }
     }
 
-    /**
-     * Register Urls for a shortcode.
-     *
-     * @throws RequestException
-     * @throws MissingBaseApiDomainException
-     *
-     * @return mixed |\Psr\Http\Message\ResponseInterface
-     */
     private function buildRequest()
     {
         $client = new Client([
@@ -109,7 +104,18 @@ class UrlRegistrar extends BaseDriver
             ],
         ]);
 
-        $response = $client->send(new Request('POST', $this->getApiBaseUrl().MPESA_C2B_REGISTER_URL));
+
+
+        try {
+            $response = $client->send(new Request('POST', $this->getApiBaseUrl().MPESA_C2B_REGISTER_URL));
+            dd(\json_decode($response->getBody(),true));
+
+            return \json_decode($response->getBody(),true);
+        } catch(\Exception $e) {
+            dd(\json_decode($e->getResponse()->getBody()->getContents()));
+
+            return \json_decode($e->getResponse()->getBody()->getContents());
+        }
 
         return $response;
     }

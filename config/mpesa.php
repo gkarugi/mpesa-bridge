@@ -66,7 +66,40 @@ return [
     | API on completion or failure of the transaction.
     |
     */
-    'stk_callback' => env('MPESA_STK_CALLBACK_URL',''),
+    'stk_callback' => env('MPESA_STK_CALLBACK_URL'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Confirmation URL
+    |--------------------------------------------------------------------------
+    |
+    | This is a fully qualified endpoint that will be be queried by Safaricom's
+    | API on completion or failure of the transaction.
+    |
+    */
+    'confirmation_url' => env('MPESA_CONFIRMATION_URL'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Validation URL
+    |--------------------------------------------------------------------------
+    |
+    | This is a fully qualified endpoint that will be be queried by Safaricom's
+    | API to validate transaction.
+    |
+    */
+    'validation_url' => env('MPESA_VALIDATION_URL'),
+
+    /*
+   |--------------------------------------------------------------------------
+   | Queue timeout URL
+   |--------------------------------------------------------------------------
+   |
+   | This is a fully qualified endpoint that will be be queried by Safaricom's
+   | API in case of a queue timeout.
+   |
+   */
+    'queue_timeout_url' => env('MPESA_QUEUE_TIMEOUT_URL'),
 
     /*
     |--------------------------------------------------------------------------
@@ -78,16 +111,4 @@ return [
     |
     */
     'identity_validation_callback' => '',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Callback Method
-    |--------------------------------------------------------------------------
-    |
-    | This is the request method to be used on the Callback URL to enable Mpesa to respond to your server.
-    |
-    | e.g. GET | POST
-    |
-    */
-    'callback_method' => 'POST',
 ];

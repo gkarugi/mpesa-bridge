@@ -55,6 +55,48 @@ class MpesaBridgeManager extends Manager implements Factory
     }
 
     /**
+     * Create an instance of the specified driver.
+     *
+     * @throws \Exception
+     *
+     * @return \Imarishwa\MpesaBridge\Drivers\BaseDriver
+     */
+    protected function createReversalDriver()
+    {
+        $config = $this->app['config']['mpesa'];
+
+        return $this->buildProvider('Imarishwa\MpesaBridge\Drivers\Reversal', $config);
+    }
+
+    /**
+     * Create an instance of the specified driver.
+     *
+     * @throws \Exception
+     *
+     * @return \Imarishwa\MpesaBridge\Drivers\BaseDriver
+     */
+    protected function createTransactionStatusDriver()
+    {
+        $config = $this->app['config']['mpesa'];
+
+        return $this->buildProvider('Imarishwa\MpesaBridge\Drivers\TransactionStatus', $config);
+    }
+
+    /**
+     * Create an instance of the specified driver.
+     *
+     * @throws \Exception
+     *
+     * @return \Imarishwa\MpesaBridge\Drivers\BaseDriver
+     */
+    protected function createSTKPushQueryDriver()
+    {
+        $config = $this->app['config']['mpesa'];
+
+        return $this->buildProvider('Imarishwa\MpesaBridge\Drivers\C2B\STKPushQuery', $config);
+    }
+
+    /**
      * Build the driver instance.
      *
      * @param  $provider

@@ -134,6 +134,6 @@ class BaseDriver
             }
         }
 
-        throw new MissingBaseApiDomainException();
+        throw new MissingBaseApiDomainException('Missing BaseApiDomain. Check your config.');
     }
 }
