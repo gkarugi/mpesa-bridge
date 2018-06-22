@@ -5,8 +5,6 @@ namespace Imarishwa\MpesaBridge\Drivers\C2B;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use Imarishwa\MpesaBridge\Drivers\BaseDriver;
-use Imarishwa\MpesaBridge\Exceptions\InvalidMpesaApiCredentialsException;
-use Imarishwa\MpesaBridge\Exceptions\MissingBaseApiDomainException;
 
 class SimulatePayment extends BaseDriver
 {
@@ -105,6 +103,6 @@ class SimulatePayment extends BaseDriver
 
         $response = $client->send(new Request('POST', $this->getApiBaseUrl().MPESA_C2B_SIMULATE_URL));
 
-        return \json_decode($response->getBody(),true);
+        return \json_decode($response->getBody(), true);
     }
 }

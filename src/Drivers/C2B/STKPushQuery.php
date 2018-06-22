@@ -7,7 +7,6 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use Imarishwa\MpesaBridge\Drivers\BaseDriver;
-use Imarishwa\MpesaBridge\Exceptions\InvalidMpesaApiCredentialsException;
 use Imarishwa\MpesaBridge\Exceptions\MissingBaseApiDomainException;
 
 class STKPushQuery extends BaseDriver
@@ -45,15 +44,15 @@ class STKPushQuery extends BaseDriver
     }
 
     /**
-     * @return \Exception|RequestException|mixed
      * @throws MissingBaseApiDomainException
+     *
+     * @return \Exception|RequestException|mixed
      */
     public function checkTransactionStatus()
     {
-        if (is_null($this->shortCode) || is_null($this->shortCodePassword) ) {
+        if (is_null($this->shortCode) || is_null($this->shortCodePassword)) {
             if ((stringNotNullOrEmpty($this->config['lnmo_default_short_code']) ||
                 stringNotNullOrEmpty($this->config['lnmo_default_passkey'])) === false) {
-
                 throw new \InvalidArgumentException('Shortcode or passkey missing');
             }
             $this->shortCode = $this->config['lnmo_default_short_code'];
@@ -68,8 +67,9 @@ class STKPushQuery extends BaseDriver
     }
 
     /**
-     * @return \Exception|RequestException|mixed
      * @throws MissingBaseApiDomainException
+     *
+     * @return \Exception|RequestException|mixed
      */
     public function buildRequest()
     {
@@ -92,7 +92,7 @@ class STKPushQuery extends BaseDriver
         try {
             $response = $client->send(new Request('POST', $this->getApiBaseUrl().MPESA_STK_PUSH_VALIDATE_URL));
 
-            return \json_decode($response->getBody(),true);
+            return \json_decode($response->getBody(), true);
         } catch (RequestException $exception) {
             return $exception;
         }

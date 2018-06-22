@@ -7,8 +7,6 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use Imarishwa\MpesaBridge\Drivers\BaseDriver;
-use Imarishwa\MpesaBridge\Exceptions\InvalidMpesaApiCredentialsException;
-use Imarishwa\MpesaBridge\Exceptions\MissingBaseApiDomainException;
 
 class STKPush extends BaseDriver
 {
@@ -117,7 +115,7 @@ class STKPush extends BaseDriver
     public function buildRequest()
     {
         $time = Carbon::now()->format('YmdHis');
-        $base64Password = \base64_encode($this->shortCode . $this->shortCodePasskey . $time);
+        $base64Password = \base64_encode($this->shortCode.$this->shortCodePasskey.$time);
 
         $client = new Client([
             'headers' => [
@@ -142,21 +140,21 @@ class STKPush extends BaseDriver
         try {
             $response = $client->send(new Request('POST', $this->getApiBaseUrl().MPESA_STK_PUSH_URL));
 
-            return \json_decode($response->getBody(),true);
+            return \json_decode($response->getBody(), true);
         } catch (RequestException $e) {
 //            dd($e->getRequest());
             if ($e->hasResponse()) {
-               dd($e->getResponse()->getBody()->getContents());
+                dd($e->getResponse()->getBody()->getContents());
             }
         }
 
 //        catch(\Exception $e) {
 //                dd($e);
-////            dd(\json_decode($e->getResponse()->getBody()->getContents()));
+        ////            dd(\json_decode($e->getResponse()->getBody()->getContents()));
 //            return \json_decode($e->getResponse()->getBody()->getContents());
 //        }
 
-        return \json_decode($response->getBody(),true);
+        return \json_decode($response->getBody(), true);
     }
 
     public function validateTransaction($checkoutRequestID)
@@ -184,7 +182,7 @@ class STKPush extends BaseDriver
 
             $response = $client->send(new Request($this->config['callback_method'], $this->getApiBaseUrl().MPESA_STK_PUSH_URL));
 
-            return \json_decode($response->getBody(),true);
+            return \json_decode($response->getBody(), true);
         } catch (RequestException $exception) {
             return $exception;
         }

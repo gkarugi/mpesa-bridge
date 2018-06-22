@@ -87,7 +87,6 @@ class TransactionStatus extends BaseDriver
             is_null($this->identifierType) ||
             is_null($this->queueTimeOutURL) ||
             is_null($this->resultURL)) {
-
             return false;
         }
 
@@ -113,7 +112,6 @@ class TransactionStatus extends BaseDriver
         }
 
         if (stringNullOrEmpty($this->initiatorName) || stringNullOrEmpty($this->initiatorShortCode) || stringNullOrEmpty($this->initiatorPassword)) {
-
             if (stringNotNullOrEmpty($this->config['default_initiator_name'])) {
                 $this->initiatorName = $this->config['default_initiator_name'];
             } else {
@@ -140,6 +138,7 @@ class TransactionStatus extends BaseDriver
 
         if ($this->paramsValid()) {
             dd($this);
+
             return $this->buildRequest();
         } else {
             throw new \InvalidArgumentException('resultURL, queueTimeOutURL, amount, transactionID, initiator fields may be missing');
@@ -154,25 +153,25 @@ class TransactionStatus extends BaseDriver
                 'Accept'        => 'application/json',
             ],
             'json' => [
-                'CommandID' => 'TransactionStatusQuery',
-                'PartyA' => $this->partyA,
-                'IdentifierType'=> $this->identifierType,
-                'Remarks' => $this->remarks,
-                'Initiator' => $this->initiatorName,
+                'CommandID'          => 'TransactionStatusQuery',
+                'PartyA'             => $this->partyA,
+                'IdentifierType'     => $this->identifierType,
+                'Remarks'            => $this->remarks,
+                'Initiator'          => $this->initiatorName,
                 'SecurityCredential' => $this->initiatorPassword,
-                'QueueTimeOutURL' => $this->queueTimeOutURL,
-                'ResultURL' => $this->resultURL,
-                'TransactionID' => $this->transactionID,
-                'Occasion' => $this->occasion,
+                'QueueTimeOutURL'    => $this->queueTimeOutURL,
+                'ResultURL'          => $this->resultURL,
+                'TransactionID'      => $this->transactionID,
+                'Occasion'           => $this->occasion,
             ],
         ]);
 
         try {
             $response = $client->send(new Request('POST', $this->getApiBaseUrl().MPESA_REVERSAL_URL));
-            dd(\json_decode($response->getBody(),true));
+            dd(\json_decode($response->getBody(), true));
 
-            return \json_decode($response->getBody(),true);
-        } catch(\Exception $e) {
+            return \json_decode($response->getBody(), true);
+        } catch (\Exception $e) {
             dd(\json_decode($e->getResponse()->getBody()->getContents()));
 
             return \json_decode($e->getResponse()->getBody()->getContents());

@@ -4,9 +4,6 @@ namespace Imarishwa\MpesaBridge\Drivers;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
-use Imarishwa\MpesaBridge\Drivers\BaseDriver;
-use Imarishwa\MpesaBridge\Exceptions\InvalidMpesaApiCredentialsException;
-use Imarishwa\MpesaBridge\Exceptions\MissingBaseApiDomainException;
 
 class Reversal extends BaseDriver
 {
@@ -99,7 +96,6 @@ class Reversal extends BaseDriver
             is_null($this->amount) ||
             is_null($this->queueTimeOutURL) ||
             is_null($this->resultURL)) {
-
             return false;
         }
 
@@ -125,7 +121,6 @@ class Reversal extends BaseDriver
         }
 
         if (stringNullOrEmpty($this->initiatorName) || stringNullOrEmpty($this->initiatorShortCode) || stringNullOrEmpty($this->initiatorPassword)) {
-
             if (stringNotNullOrEmpty($this->config['default_initiator_name'])) {
                 $this->initiatorName = $this->config['default_initiator_name'];
             } else {
@@ -165,28 +160,29 @@ class Reversal extends BaseDriver
                 'Accept'        => 'application/json',
             ],
             'json' => [
-                'CommandID' => 'TransactionReversal',
-                'Amount' => $this->amount,
-                'ReceiverParty' => $this->receiverParty,
+                'CommandID'             => 'TransactionReversal',
+                'Amount'                => $this->amount,
+                'ReceiverParty'         => $this->receiverParty,
                 'RecieverIdentifierType'=> $this->receiverIdentifierType,
-                'Remarks' => $this->remarks,
-                'Initiator' => $this->initiatorName,
-                'SecurityCredential' => $this->initiatorPassword,
-                'QueueTimeOutURL' => $this->queueTimeOutURL,
-                'ResultURL' => $this->resultURL,
-                'TransactionID' => $this->transactionID,
-                'Occasion' => $this->occasion,
+                'Remarks'               => $this->remarks,
+                'Initiator'             => $this->initiatorName,
+                'SecurityCredential'    => $this->initiatorPassword,
+                'QueueTimeOutURL'       => $this->queueTimeOutURL,
+                'ResultURL'             => $this->resultURL,
+                'TransactionID'         => $this->transactionID,
+                'Occasion'              => $this->occasion,
             ],
         ]);
 
         try {
             dd($this);
             $response = $client->send(new Request('POST', $this->getApiBaseUrl().MPESA_REVERSAL_URL));
-            dd(\json_decode($response->getBody(),true));
-            return \json_decode($response->getBody(),true);
-        } catch(\Exception $e) {
+            dd(\json_decode($response->getBody(), true));
 
+            return \json_decode($response->getBody(), true);
+        } catch (\Exception $e) {
             dd(\json_decode($e->getResponse()->getBody()->getContents()));
+
             return \json_decode($e->getResponse()->getBody()->getContents());
         }
     }

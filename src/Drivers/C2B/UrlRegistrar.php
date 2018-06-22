@@ -6,8 +6,6 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use Imarishwa\MpesaBridge\Drivers\BaseDriver;
-use Imarishwa\MpesaBridge\Exceptions\InvalidMpesaApiCredentialsException;
-use Imarishwa\MpesaBridge\Exceptions\MissingBaseApiDomainException;
 
 class UrlRegistrar extends BaseDriver
 {
@@ -83,7 +81,7 @@ class UrlRegistrar extends BaseDriver
         try {
             $response = $this->buildRequest();
 
-            return \json_decode($response->getBody(),true);
+            return \json_decode($response->getBody(), true);
         } catch (RequestException $exception) {
             return $exception;
         }
@@ -104,14 +102,12 @@ class UrlRegistrar extends BaseDriver
             ],
         ]);
 
-
-
         try {
             $response = $client->send(new Request('POST', $this->getApiBaseUrl().MPESA_C2B_REGISTER_URL));
-            dd(\json_decode($response->getBody(),true));
+            dd(\json_decode($response->getBody(), true));
 
-            return \json_decode($response->getBody(),true);
-        } catch(\Exception $e) {
+            return \json_decode($response->getBody(), true);
+        } catch (\Exception $e) {
             dd(\json_decode($e->getResponse()->getBody()->getContents()));
 
             return \json_decode($e->getResponse()->getBody()->getContents());
