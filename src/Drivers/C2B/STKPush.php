@@ -101,7 +101,6 @@ class STKPush extends BaseDriver
         if (is_null($this->shortCode) || is_null($this->shortCodePasskey) || is_null($this->stkCallback)) {
             if ((stringNotNullOrEmpty($this->config['lnmo_default_short_code']) ||
                 stringNotNullOrEmpty($this->config['lnmo_default_passkey'])) === false) {
-
                 throw new \InvalidArgumentException('Shortcode, stk_callback or passkey missing');
             }
             $this->shortCode = $this->config['lnmo_default_short_code'];
