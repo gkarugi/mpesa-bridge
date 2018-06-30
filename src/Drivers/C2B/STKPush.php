@@ -8,8 +8,6 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Log;
 use Imarishwa\MpesaBridge\Drivers\BaseDriver;
-use Imarishwa\MpesaBridge\Exceptions\InvalidMpesaApiCredentialsException;
-use Imarishwa\MpesaBridge\Exceptions\MissingBaseApiDomainException;
 
 class STKPush extends BaseDriver
 {
@@ -132,7 +130,7 @@ class STKPush extends BaseDriver
     public function buildRequest()
     {
         $time = Carbon::now()->format('YmdHis');
-        $base64Password = \base64_encode($this->shortCode . $this->shortCodePasskey . $time);
+        $base64Password = \base64_encode($this->shortCode.$this->shortCodePasskey.$time);
 
         $client = new Client([
             'headers' => [

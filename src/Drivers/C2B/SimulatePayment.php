@@ -6,8 +6,6 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use Imarishwa\MpesaBridge\Drivers\BaseDriver;
-use Imarishwa\MpesaBridge\Exceptions\InvalidMpesaApiCredentialsException;
-use Imarishwa\MpesaBridge\Exceptions\MissingBaseApiDomainException;
 
 class SimulatePayment extends BaseDriver
 {

@@ -14,7 +14,7 @@ if (!function_exists('stringNotNullOrEmpty')) {
 if (!function_exists('stringNullOrEmpty')) {
     function stringNullOrEmpty($string) : bool
     {
-        return ! stringNotNullOrEmpty($string);
+        return !stringNotNullOrEmpty($string);
     }
 }
 
@@ -28,4 +28,3 @@ if (!function_exists('isValidUrl')) {
         }
     }
 }
-

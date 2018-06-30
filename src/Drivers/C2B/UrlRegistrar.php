@@ -7,8 +7,6 @@ use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use Imarishwa\MpesaBridge\Drivers\BaseDriver;
-use Imarishwa\MpesaBridge\Exceptions\InvalidMpesaApiCredentialsException;
-use Imarishwa\MpesaBridge\Exceptions\MissingBaseApiDomainException;
 
 class UrlRegistrar extends BaseDriver
 {
@@ -89,7 +87,7 @@ class UrlRegistrar extends BaseDriver
         try {
             $response = $this->buildRequest();
 
-            return \json_decode($response->getBody(),true);
+            return \json_decode($response->getBody(), true);
         } catch (RequestException $exception) {
             $this->handleException($exception);
             return null;

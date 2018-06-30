@@ -91,7 +91,6 @@ class TransactionStatus extends BaseDriver
             is_null($this->identifierType) ||
             is_null($this->queueTimeOutURL) ||
             is_null($this->resultURL))) {
-
             return false;
         }
 
@@ -122,7 +121,6 @@ class TransactionStatus extends BaseDriver
         }
 
         if (stringNullOrEmpty($this->initiatorName) || stringNullOrEmpty($this->initiatorShortCode) || stringNullOrEmpty($this->initiatorPassword)) {
-
             if (stringNotNullOrEmpty($this->config['default_initiator_name'])) {
                 $this->initiatorName = $this->config['default_initiator_name'];
             } else {
@@ -152,7 +150,6 @@ class TransactionStatus extends BaseDriver
         }
 
         try{
-//            dd($this);
             $response = $this->buildRequest();
 
             return \json_decode($response->getBody(),true);
@@ -186,8 +183,6 @@ class TransactionStatus extends BaseDriver
                 'Occasion' => $this->occasion,
             ],
         ]);
-
-//        dd($client);
 
         $response = $client->send(new Request('POST', $this->getApiBaseUrl().MPESA_REVERSAL_URL));
 
