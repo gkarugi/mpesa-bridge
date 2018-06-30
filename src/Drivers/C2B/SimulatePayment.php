@@ -3,6 +3,7 @@
 namespace Imarishwa\MpesaBridge\Drivers\C2B;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use Imarishwa\MpesaBridge\Drivers\BaseDriver;
 use Imarishwa\MpesaBridge\Exceptions\InvalidMpesaApiCredentialsException;
@@ -68,6 +69,11 @@ class SimulatePayment extends BaseDriver
         return true;
     }
 
+    /**
+     * @return mixed
+     * @throws MissingBaseApiDomainException
+     * @throws \Imarishwa\MpesaBridge\Exceptions\MpesaRequestException
+     */
     public function simulate()
     {
         if (is_null($this->shortCode)) {
@@ -80,8 +86,14 @@ class SimulatePayment extends BaseDriver
         if (!$this->paramsValid()) {
             throw new \InvalidArgumentException('A safaricom number, shortcode and charge amount are mandatory');
         }
+        try {
+            $response = $this->buildRequest();
 
-        return $this->buildRequest();
+            return \json_decode($response->getBody(),true);
+        } catch (RequestException $exception) {
+            $this->handleException($exception);
+            return null;
+        }
     }
 
     /**
@@ -96,7 +108,7 @@ class SimulatePayment extends BaseDriver
             ],
             'json' => [
                 'ShortCode'     => $this->shortCode,
-                'CommandID'     => 'CustomerBuyGoodsOnline',
+                'CommandID'     => 'CustomerPayBillOnline',
                 'Amount'        => $this->chargeAmount,
                 'Msisdn'        => $this->safaricomNumber,
                 'BillRefNumber' => $this->billReferenceNumber,
@@ -105,6 +117,6 @@ class SimulatePayment extends BaseDriver
 
         $response = $client->send(new Request('POST', $this->getApiBaseUrl().MPESA_C2B_SIMULATE_URL));
 
-        return \json_decode($response->getBody(),true);
+        return $response;
     }
 }

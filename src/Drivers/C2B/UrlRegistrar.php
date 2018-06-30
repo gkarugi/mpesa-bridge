@@ -3,6 +3,7 @@
 namespace Imarishwa\MpesaBridge\Drivers\C2B;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use Imarishwa\MpesaBridge\Drivers\BaseDriver;
@@ -70,6 +71,11 @@ class UrlRegistrar extends BaseDriver
         return true;
     }
 
+    /**
+     * @return mixed
+     * @throws MissingBaseApiDomainException
+     * @throws \Imarishwa\MpesaBridge\Exceptions\MpesaRequestException
+     */
     public function register()
     {
         if (is_null($this->responseType)) {
@@ -85,10 +91,15 @@ class UrlRegistrar extends BaseDriver
 
             return \json_decode($response->getBody(),true);
         } catch (RequestException $exception) {
-            return $exception;
+            $this->handleException($exception);
+            return null;
         }
     }
 
+    /**
+     * @return mixed|\Psr\Http\Message\ResponseInterface
+     * @throws MissingBaseApiDomainException
+     */
     private function buildRequest()
     {
         $client = new Client([
@@ -104,18 +115,7 @@ class UrlRegistrar extends BaseDriver
             ],
         ]);
 
-
-
-        try {
-            $response = $client->send(new Request('POST', $this->getApiBaseUrl().MPESA_C2B_REGISTER_URL));
-            dd(\json_decode($response->getBody(),true));
-
-            return \json_decode($response->getBody(),true);
-        } catch(\Exception $e) {
-            dd(\json_decode($e->getResponse()->getBody()->getContents()));
-
-            return \json_decode($e->getResponse()->getBody()->getContents());
-        }
+        $response = $client->send(new Request('POST', $this->getApiBaseUrl().MPESA_C2B_REGISTER_URL));
 
         return $response;
     }

@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Imarishwa\MpesaBridge\Exceptions\InvalidMpesaApiCredentialsException;
 use Imarishwa\MpesaBridge\Exceptions\MissingBaseApiDomainException;
+use Imarishwa\MpesaBridge\Exceptions\MpesaRequestException;
 
 class BaseDriver
 {
@@ -135,5 +136,21 @@ class BaseDriver
         }
 
         throw new MissingBaseApiDomainException('Missing BaseApiDomain. Check your config.');
+    }
+
+    /**
+     * @param RequestException $exception
+     * @throws MpesaRequestException
+     */
+    public function handleException(RequestException $exception)
+    {
+        $mpesaResponseData = json_decode($exception->getResponse()->getBody()->getContents());
+        $requestID = $mpesaResponseData->requestId ?? null;
+        $errorCode = $mpesaResponseData->errorCode ?? null;
+        $errorMessage = $mpesaResponseData->errorMessage ?? null;
+        $reasonPhrase = $exception->getResponse()->getReasonPhrase();
+        $statusCode = $exception->getResponse()->getStatusCode();
+
+        throw new MpesaRequestException($reasonPhrase, $statusCode, NULL, $requestID, $errorCode, $errorMessage);
     }
 }

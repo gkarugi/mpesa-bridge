@@ -3,6 +3,7 @@
 namespace Imarishwa\MpesaBridge\Drivers;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use Imarishwa\MpesaBridge\Drivers\BaseDriver;
 use Imarishwa\MpesaBridge\Exceptions\InvalidMpesaApiCredentialsException;
@@ -106,6 +107,12 @@ class Reversal extends BaseDriver
         return true;
     }
 
+
+    /**
+     * @return mixed
+     * @throws MissingBaseApiDomainException
+     * @throws \Imarishwa\MpesaBridge\Exceptions\MpesaRequestException
+     */
     public function reverse()
     {
         if (stringNullOrEmpty($this->resultURL)) {
@@ -150,13 +157,24 @@ class Reversal extends BaseDriver
             $this->remarks = 'Transaction reversal request';
         }
 
-        if ($this->paramsValid()) {
-            return $this->buildRequest();
-        } else {
+        if (!$this->paramsValid()) {
             throw new \InvalidArgumentException('resultURL, queueTimeOutURL, amount, transactionID, initiator fields may be missing');
+        }
+
+        try{
+            $response =  $this->buildRequest();
+
+            return \json_decode($response->getBody(),true);
+        } catch(RequestException $exception) {
+            $this->handleException($exception);
+            return null;
         }
     }
 
+    /**
+     * @return mixed|\Psr\Http\Message\ResponseInterface
+     * @throws MissingBaseApiDomainException
+     */
     public function buildRequest()
     {
         $client = new Client([
@@ -179,15 +197,8 @@ class Reversal extends BaseDriver
             ],
         ]);
 
-        try {
-            dd($this);
-            $response = $client->send(new Request('POST', $this->getApiBaseUrl().MPESA_REVERSAL_URL));
-            dd(\json_decode($response->getBody(),true));
-            return \json_decode($response->getBody(),true);
-        } catch(\Exception $e) {
+        $response = $client->send(new Request('POST', $this->getApiBaseUrl().MPESA_REVERSAL_URL));
 
-            dd(\json_decode($e->getResponse()->getBody()->getContents()));
-            return \json_decode($e->getResponse()->getBody()->getContents());
-        }
+        return $response;
     }
 }

@@ -45,8 +45,9 @@ class STKPushQuery extends BaseDriver
     }
 
     /**
-     * @return \Exception|RequestException|mixed
+     * @return mixed
      * @throws MissingBaseApiDomainException
+     * @throws \Imarishwa\MpesaBridge\Exceptions\MpesaRequestException
      */
     public function checkTransactionStatus()
     {
@@ -63,12 +64,19 @@ class STKPushQuery extends BaseDriver
         if (!$this->paramsValid()) {
             throw new \InvalidArgumentException('checkoutRequestID parameter is mandatory');
         }
+        try {
+            $response = $this->buildRequest();
 
-        return $this->buildRequest();
+            return \json_decode($response->getBody(),true);
+        } catch (RequestException $exception) {
+            $this->handleException($exception);
+
+            return null;
+        }
     }
 
     /**
-     * @return \Exception|RequestException|mixed
+     * @return mixed|\Psr\Http\Message\ResponseInterface
      * @throws MissingBaseApiDomainException
      */
     public function buildRequest()
@@ -89,12 +97,8 @@ class STKPushQuery extends BaseDriver
             ],
         ]);
 
-        try {
-            $response = $client->send(new Request('POST', $this->getApiBaseUrl().MPESA_STK_PUSH_VALIDATE_URL));
+        $response = $client->send(new Request('POST', $this->getApiBaseUrl().MPESA_STK_PUSH_VALIDATE_URL));
 
-            return \json_decode($response->getBody(),true);
-        } catch (RequestException $exception) {
-            return $exception;
-        }
+        return $response;
     }
 }

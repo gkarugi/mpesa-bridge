@@ -3,6 +3,7 @@
 namespace Imarishwa\MpesaBridge\Drivers;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 
 class TransactionStatus extends BaseDriver
@@ -17,13 +18,14 @@ class TransactionStatus extends BaseDriver
     protected $remarks;
     protected $queueTimeOutURL;
     protected $resultURL;
-    protected $securityCredential;
+    protected $initiatorSecurityCredential;
 
-    public function using($initiatorName, $initiatorShortCode, $initiatorPassword)
+    public function using($initiatorName, $initiatorShortCode, $initiatorPassword, $initiatorSecurityCredential)
     {
         $this->initiatorName = $initiatorName;
         $this->initiatorShortCode = $initiatorShortCode;
         $this->initiatorPassword = $initiatorPassword;
+        $this->initiatorSecurityCredential = $initiatorSecurityCredential;
         $this->identifierType = 4;
         $this->partyA = $this->initiatorShortCode;
 
@@ -39,14 +41,16 @@ class TransactionStatus extends BaseDriver
 
     public function partyA($partyA)
     {
-        $this->partyA = $partyA;
+        if ((strlen($partyA) === 6)) {
+            $this->partyA = $partyA;
+            $this->identifierType = 4;
+        } elseif (strlen($partyA) === 12) {
+            $this->partyA = $partyA;
+            $this->identifierType = 1;
+        } else {
+            throw new \InvalidArgumentException('Party A must either be a valid shortcode or an MSISDN');
+        }
 
-        return $this;
-    }
-
-    public function identifierType($identifierType)
-    {
-        $this->identifierType = $identifierType;
 
         return $this;
     }
@@ -81,12 +85,12 @@ class TransactionStatus extends BaseDriver
 
     public function paramsValid()
     {
-        if (is_null($this->initiatorName) ||
+        if ((is_null($this->initiatorName) ||
             is_null($this->transactionID) ||
             is_null($this->partyA) ||
             is_null($this->identifierType) ||
             is_null($this->queueTimeOutURL) ||
-            is_null($this->resultURL)) {
+            is_null($this->resultURL))) {
 
             return false;
         }
@@ -94,11 +98,16 @@ class TransactionStatus extends BaseDriver
         return true;
     }
 
+    /**
+     * @return mixed|null
+     * @throws \Imarishwa\MpesaBridge\Exceptions\MissingBaseApiDomainException
+     * @throws \Imarishwa\MpesaBridge\Exceptions\MpesaRequestException
+     */
     public function checkStatus()
     {
         if (stringNullOrEmpty($this->resultURL)) {
-            if (stringNotNullOrEmpty($this->config['reversal_result_url'])) {
-                $this->resultURL = $this->config['reversal_result_url'];
+            if (stringNotNullOrEmpty($this->config['check_transaction_result_url'])) {
+                $this->resultURL = $this->config['check_transaction_result_url'];
             } else {
                 throw new \InvalidArgumentException('result url is mandatory');
             }
@@ -124,28 +133,39 @@ class TransactionStatus extends BaseDriver
             } else {
                 throw new \InvalidArgumentException('initiator short code is mandatory');
             }
-            if (stringNotNullOrEmpty($this->config['default_initiator_password'])) {
-                $this->initiatorPassword = $this->config['default_initiator_password'];
+            if (stringNotNullOrEmpty($this->config['default_initiator_security_credential'])) {
+                $this->initiatorPassword = $this->config['default_initiator_security_credential'];
             } else {
                 throw new \InvalidArgumentException('initiator password is mandatory');
             }
 
-            $this->receiverIdentifierType = 4;
-            $this->receiverParty = $this->initiatorShortCode;
+            $this->identifierType = 4;
+            $this->partyA = $this->initiatorShortCode;
         }
 
         if (stringNullOrEmpty($this->remarks)) {
             $this->remarks = 'Check transaction status';
         }
 
-        if ($this->paramsValid()) {
-            dd($this);
-            return $this->buildRequest();
-        } else {
+        if (!$this->paramsValid()) {
             throw new \InvalidArgumentException('resultURL, queueTimeOutURL, amount, transactionID, initiator fields may be missing');
+        }
+
+        try{
+//            dd($this);
+            $response = $this->buildRequest();
+
+            return \json_decode($response->getBody(),true);
+        } catch(RequestException $exception) {
+            return json_decode($exception->getResponse()->getBody());
+            $this->handleException($exception);
         }
     }
 
+    /**
+     * @return mixed|\Psr\Http\Message\ResponseInterface
+     * @throws \Imarishwa\MpesaBridge\Exceptions\MissingBaseApiDomainException
+     */
     public function buildRequest()
     {
         $client = new Client([
@@ -155,11 +175,11 @@ class TransactionStatus extends BaseDriver
             ],
             'json' => [
                 'CommandID' => 'TransactionStatusQuery',
-                'PartyA' => $this->partyA,
+                'PartyA' => $this->initiatorShortCode,
                 'IdentifierType'=> $this->identifierType,
                 'Remarks' => $this->remarks,
                 'Initiator' => $this->initiatorName,
-                'SecurityCredential' => $this->initiatorPassword,
+                'SecurityCredential' => $this->initiatorSecurityCredential,
                 'QueueTimeOutURL' => $this->queueTimeOutURL,
                 'ResultURL' => $this->resultURL,
                 'TransactionID' => $this->transactionID,
@@ -167,15 +187,10 @@ class TransactionStatus extends BaseDriver
             ],
         ]);
 
-        try {
-            $response = $client->send(new Request('POST', $this->getApiBaseUrl().MPESA_REVERSAL_URL));
-            dd(\json_decode($response->getBody(),true));
+//        dd($client);
 
-            return \json_decode($response->getBody(),true);
-        } catch(\Exception $e) {
-            dd(\json_decode($e->getResponse()->getBody()->getContents()));
+        $response = $client->send(new Request('POST', $this->getApiBaseUrl().MPESA_REVERSAL_URL));
 
-            return \json_decode($e->getResponse()->getBody()->getContents());
-        }
+        return $response;
     }
 }

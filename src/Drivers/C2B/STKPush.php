@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
+use Illuminate\Support\Facades\Log;
 use Imarishwa\MpesaBridge\Drivers\BaseDriver;
 use Imarishwa\MpesaBridge\Exceptions\InvalidMpesaApiCredentialsException;
 use Imarishwa\MpesaBridge\Exceptions\MissingBaseApiDomainException;
@@ -96,6 +97,11 @@ class STKPush extends BaseDriver
         return true;
     }
 
+    /**
+     * @return mixed
+     * @throws MissingBaseApiDomainException
+     * @throws \Imarishwa\MpesaBridge\Exceptions\MpesaRequestException
+     */
     public function push()
     {
         if (is_null($this->shortCode) || is_null($this->shortCodePasskey) || is_null($this->stkCallback)) {
@@ -110,10 +116,19 @@ class STKPush extends BaseDriver
         if (!$this->paramsValid()) {
             throw new \InvalidArgumentException('A safaricom number, an amount, an account reference and transaction description parameters are mandatory. Also ensure a stk push callback url is defined');
         }
+        try{
+            $response = $this->buildRequest();
 
-        return $this->buildRequest();
+            return \json_decode($response->getBody(),true);
+        } catch (RequestException $exception) {
+            $this->handleException($exception);
+        }
     }
 
+    /**
+     * @return mixed
+     * @throws MissingBaseApiDomainException
+     */
     public function buildRequest()
     {
         $time = Carbon::now()->format('YmdHis');
@@ -131,7 +146,7 @@ class STKPush extends BaseDriver
                 'TransactionType'   => 'CustomerPayBillOnline',
                 'Amount'            => $this->chargeAmount,
                 'PartyA'            => $this->mobileNumber,
-                'PartyB'            => '123456', //$this->shortCode,
+                'PartyB'            => $this->shortCode,
                 'PhoneNumber'       => $this->mobileNumber,
                 'CallBackURL'       => $this->stkCallback,
                 'AccountReference'  => $this->accountReference,
@@ -139,54 +154,8 @@ class STKPush extends BaseDriver
             ],
         ]);
 
-        try {
-            $response = $client->send(new Request('POST', $this->getApiBaseUrl().MPESA_STK_PUSH_URL));
+        $response = $client->send(new Request('POST', $this->getApiBaseUrl().MPESA_STK_PUSH_URL));
 
-            return \json_decode($response->getBody(),true);
-        } catch (RequestException $e) {
-//            dd($e->getRequest());
-            if ($e->hasResponse()) {
-               dd($e->getResponse()->getBody()->getContents());
-            }
-        }
-
-//        catch(\Exception $e) {
-//                dd($e);
-////            dd(\json_decode($e->getResponse()->getBody()->getContents()));
-//            return \json_decode($e->getResponse()->getBody()->getContents());
-//        }
-
-        return \json_decode($response->getBody(),true);
-    }
-
-    public function validateTransaction($checkoutRequestID)
-    {
-        $time = Carbon::now()->format('YmdHis');
-        $shortCode = $this->config['short_code'];
-        $passkey = $this->config['passkey'];
-        $password = \base64_encode($shortCode.$passkey.$time);
-
-        $body = [
-            'BusinessShortCode'   => $shortCode,
-            'Password'            => $password,
-            'Timestamp'           => $time,
-            'CheckoutRequestID'   => $checkoutRequestID,
-        ];
-
-        try {
-            $client = new Client([
-                'headers' => [
-                    'Authorization' => 'Bearer '.$this->authenticate(),
-                    'Accept'        => 'application/json',
-                ],
-                'json' => $body,
-            ]);
-
-            $response = $client->send(new Request($this->config['callback_method'], $this->getApiBaseUrl().MPESA_STK_PUSH_URL));
-
-            return \json_decode($response->getBody(),true);
-        } catch (RequestException $exception) {
-            return $exception;
-        }
+        return $response;
     }
 }
