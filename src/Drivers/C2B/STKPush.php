@@ -6,7 +6,6 @@ use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
-use Illuminate\Support\Facades\Log;
 use Imarishwa\MpesaBridge\Drivers\BaseDriver;
 
 class STKPush extends BaseDriver
@@ -96,9 +95,10 @@ class STKPush extends BaseDriver
     }
 
     /**
-     * @return mixed
      * @throws MissingBaseApiDomainException
      * @throws \Imarishwa\MpesaBridge\Exceptions\MpesaRequestException
+     *
+     * @return mixed
      */
     public function push()
     {
@@ -114,18 +114,20 @@ class STKPush extends BaseDriver
         if (!$this->paramsValid()) {
             throw new \InvalidArgumentException('A safaricom number, an amount, an account reference and transaction description parameters are mandatory. Also ensure a stk push callback url is defined');
         }
-        try{
+
+        try {
             $response = $this->buildRequest();
 
-            return \json_decode($response->getBody(),true);
+            return \json_decode($response->getBody(), true);
         } catch (RequestException $exception) {
             $this->handleException($exception);
         }
     }
 
     /**
-     * @return mixed
      * @throws MissingBaseApiDomainException
+     *
+     * @return mixed
      */
     public function buildRequest()
     {

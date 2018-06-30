@@ -68,9 +68,10 @@ class SimulatePayment extends BaseDriver
     }
 
     /**
-     * @return mixed
      * @throws MissingBaseApiDomainException
      * @throws \Imarishwa\MpesaBridge\Exceptions\MpesaRequestException
+     *
+     * @return mixed
      */
     public function simulate()
     {
@@ -84,13 +85,15 @@ class SimulatePayment extends BaseDriver
         if (!$this->paramsValid()) {
             throw new \InvalidArgumentException('A safaricom number, shortcode and charge amount are mandatory');
         }
+
         try {
             $response = $this->buildRequest();
 
-            return \json_decode($response->getBody(),true);
+            return \json_decode($response->getBody(), true);
         } catch (RequestException $exception) {
             $this->handleException($exception);
-            return null;
+
+            return;
         }
     }
 

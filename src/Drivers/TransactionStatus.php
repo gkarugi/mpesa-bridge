@@ -51,7 +51,6 @@ class TransactionStatus extends BaseDriver
             throw new \InvalidArgumentException('Party A must either be a valid shortcode or an MSISDN');
         }
 
-
         return $this;
     }
 
@@ -98,9 +97,10 @@ class TransactionStatus extends BaseDriver
     }
 
     /**
-     * @return mixed|null
      * @throws \Imarishwa\MpesaBridge\Exceptions\MissingBaseApiDomainException
      * @throws \Imarishwa\MpesaBridge\Exceptions\MpesaRequestException
+     *
+     * @return mixed|null
      */
     public function checkStatus()
     {
@@ -149,19 +149,20 @@ class TransactionStatus extends BaseDriver
             throw new \InvalidArgumentException('resultURL, queueTimeOutURL, amount, transactionID, initiator fields may be missing');
         }
 
-        try{
+        try {
             $response = $this->buildRequest();
 
-            return \json_decode($response->getBody(),true);
-        } catch(RequestException $exception) {
+            return \json_decode($response->getBody(), true);
+        } catch (RequestException $exception) {
             return json_decode($exception->getResponse()->getBody());
             $this->handleException($exception);
         }
     }
 
     /**
-     * @return mixed|\Psr\Http\Message\ResponseInterface
      * @throws \Imarishwa\MpesaBridge\Exceptions\MissingBaseApiDomainException
+     *
+     * @return mixed|\Psr\Http\Message\ResponseInterface
      */
     public function buildRequest()
     {
@@ -171,16 +172,16 @@ class TransactionStatus extends BaseDriver
                 'Accept'        => 'application/json',
             ],
             'json' => [
-                'CommandID' => 'TransactionStatusQuery',
-                'PartyA' => $this->initiatorShortCode,
-                'IdentifierType'=> $this->identifierType,
-                'Remarks' => $this->remarks,
-                'Initiator' => $this->initiatorName,
+                'CommandID'          => 'TransactionStatusQuery',
+                'PartyA'             => $this->initiatorShortCode,
+                'IdentifierType'     => $this->identifierType,
+                'Remarks'            => $this->remarks,
+                'Initiator'          => $this->initiatorName,
                 'SecurityCredential' => $this->initiatorSecurityCredential,
-                'QueueTimeOutURL' => $this->queueTimeOutURL,
-                'ResultURL' => $this->resultURL,
-                'TransactionID' => $this->transactionID,
-                'Occasion' => $this->occasion,
+                'QueueTimeOutURL'    => $this->queueTimeOutURL,
+                'ResultURL'          => $this->resultURL,
+                'TransactionID'      => $this->transactionID,
+                'Occasion'           => $this->occasion,
             ],
         ]);
 

@@ -103,11 +103,11 @@ class Reversal extends BaseDriver
         return true;
     }
 
-
     /**
-     * @return mixed
      * @throws MissingBaseApiDomainException
      * @throws \Imarishwa\MpesaBridge\Exceptions\MpesaRequestException
+     *
+     * @return mixed
      */
     public function reverse()
     {
@@ -156,19 +156,21 @@ class Reversal extends BaseDriver
             throw new \InvalidArgumentException('resultURL, queueTimeOutURL, amount, transactionID, initiator fields may be missing');
         }
 
-        try{
-            $response =  $this->buildRequest();
+        try {
+            $response = $this->buildRequest();
 
-            return \json_decode($response->getBody(),true);
-        } catch(RequestException $exception) {
+            return \json_decode($response->getBody(), true);
+        } catch (RequestException $exception) {
             $this->handleException($exception);
-            return null;
+
+            return;
         }
     }
 
     /**
-     * @return mixed|\Psr\Http\Message\ResponseInterface
      * @throws MissingBaseApiDomainException
+     *
+     * @return mixed|\Psr\Http\Message\ResponseInterface
      */
     public function buildRequest()
     {
@@ -191,7 +193,7 @@ class Reversal extends BaseDriver
                 'Occasion'              => $this->occasion,
             ],
         ]);
-        
+
         $response = $client->send(new Request('POST', $this->getApiBaseUrl().MPESA_REVERSAL_URL));
 
         return $response;

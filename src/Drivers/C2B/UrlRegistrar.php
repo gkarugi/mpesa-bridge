@@ -3,7 +3,6 @@
 namespace Imarishwa\MpesaBridge\Drivers\C2B;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use Imarishwa\MpesaBridge\Drivers\BaseDriver;
@@ -70,9 +69,10 @@ class UrlRegistrar extends BaseDriver
     }
 
     /**
-     * @return mixed
      * @throws MissingBaseApiDomainException
      * @throws \Imarishwa\MpesaBridge\Exceptions\MpesaRequestException
+     *
+     * @return mixed
      */
     public function register()
     {
@@ -90,13 +90,15 @@ class UrlRegistrar extends BaseDriver
             return \json_decode($response->getBody(), true);
         } catch (RequestException $exception) {
             $this->handleException($exception);
-            return null;
+
+            return;
         }
     }
 
     /**
-     * @return mixed|\Psr\Http\Message\ResponseInterface
      * @throws MissingBaseApiDomainException
+     *
+     * @return mixed|\Psr\Http\Message\ResponseInterface
      */
     private function buildRequest()
     {

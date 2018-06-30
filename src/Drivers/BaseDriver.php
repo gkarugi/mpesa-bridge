@@ -140,6 +140,7 @@ class BaseDriver
 
     /**
      * @param RequestException $exception
+     *
      * @throws MpesaRequestException
      */
     public function handleException(RequestException $exception)
@@ -151,6 +152,6 @@ class BaseDriver
         $reasonPhrase = $exception->getResponse()->getReasonPhrase();
         $statusCode = $exception->getResponse()->getStatusCode();
 
-        throw new MpesaRequestException($reasonPhrase, $statusCode, NULL, $requestID, $errorCode, $errorMessage);
+        throw new MpesaRequestException($reasonPhrase, $statusCode, null, $requestID, $errorCode, $errorMessage);
     }
 }

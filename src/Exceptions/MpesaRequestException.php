@@ -2,14 +2,13 @@
 
 namespace Imarishwa\MpesaBridge\Exceptions;
 
-
 class MpesaRequestException extends \Exception
 {
     protected $requestID;
     protected $errorCode;
     protected $errorMessage;
 
-    public function __construct($message = '', $code = 0 , \Exception $previous = NULL, $requestID = NULL, $errorCode = NULL, $errorMessage = NULL)
+    public function __construct($message = '', $code = 0, \Exception $previous = null, $requestID = null, $errorCode = null, $errorMessage = null)
     {
         $this->requestID = $requestID;
         $this->errorCode = $errorCode;
@@ -31,5 +30,4 @@ class MpesaRequestException extends \Exception
     {
         return $this->errorMessage;
     }
-
 }
