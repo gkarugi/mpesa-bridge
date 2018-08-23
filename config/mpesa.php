@@ -33,6 +33,8 @@ return [
     'default_initiator_name'        => env('MPESA_DEFAULT_INITIATOR_NAME'),
     'default_initiator_short_code'  => env('MPESA_DEFAULT_INITIATOR_SHORT_CODE'),
     'default_initiator_password'    => env('MPESA_DEFAULT_INITIATOR_PASSWORD'),
+    'default_initiator_security_credential' => env('MPESA_DEFAULT_INITIATOR_SECURITY_CREDENTIAL'),
+    'simulate_payment_test_mobile_number' => env('MPESA_SIMULATE_TEST_MOBILE_NUMBER','254708374149'),
 
     /*
     |--------------------------------------------------------------------------
