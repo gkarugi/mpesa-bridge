@@ -7,6 +7,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use Imarishwa\MpesaBridge\Drivers\BaseDriver;
+use Imarishwa\MpesaBridge\Exceptions\MissingBaseApiDomainException;
 
 class STKPush extends BaseDriver
 {
@@ -95,10 +96,10 @@ class STKPush extends BaseDriver
     }
 
     /**
-     * @throws MissingBaseApiDomainException
-     * @throws \Imarishwa\MpesaBridge\Exceptions\MpesaRequestException
-     *
      * @return mixed
+     * @throws MissingBaseApiDomainException
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Imarishwa\MpesaBridge\Exceptions\MpesaRequestException
      */
     public function push()
     {
@@ -124,10 +125,11 @@ class STKPush extends BaseDriver
         }
     }
 
+
     /**
+     * @return mixed|\Psr\Http\Message\ResponseInterface
      * @throws MissingBaseApiDomainException
-     *
-     * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function buildRequest()
     {
