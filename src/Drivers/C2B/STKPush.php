@@ -96,10 +96,11 @@ class STKPush extends BaseDriver
     }
 
     /**
-     * @return mixed
      * @throws MissingBaseApiDomainException
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Imarishwa\MpesaBridge\Exceptions\MpesaRequestException
+     *
+     * @return mixed
      */
     public function push()
     {
@@ -125,11 +126,11 @@ class STKPush extends BaseDriver
         }
     }
 
-
     /**
-     * @return mixed|\Psr\Http\Message\ResponseInterface
      * @throws MissingBaseApiDomainException
      * @throws \GuzzleHttp\Exception\GuzzleException
+     *
+     * @return mixed|\Psr\Http\Message\ResponseInterface
      */
     public function buildRequest()
     {

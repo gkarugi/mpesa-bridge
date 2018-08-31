@@ -68,12 +68,12 @@ class SimulatePayment extends BaseDriver
         return true;
     }
 
-
     /**
-     * @return mixed|void
      * @throws MissingBaseApiDomainException
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Imarishwa\MpesaBridge\Exceptions\MpesaRequestException
+     *
+     * @return mixed|void
      */
     public function simulate()
     {
@@ -99,11 +99,11 @@ class SimulatePayment extends BaseDriver
         }
     }
 
-
     /**
-     * @return mixed|\Psr\Http\Message\ResponseInterface
      * @throws MissingBaseApiDomainException
      * @throws \GuzzleHttp\Exception\GuzzleException
+     *
+     * @return mixed|\Psr\Http\Message\ResponseInterface
      */
     public function buildRequest()
     {
