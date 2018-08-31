@@ -64,10 +64,11 @@ class BaseDriver
         }
     }
 
+
     /**
-     * @throws \Imarishwa\MpesaBridge\Exceptions\MissingBaseApiDomainException
-     *
      * @return mixed
+     * @throws MissingBaseApiDomainException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     final private function mpesaAuth()
     {
